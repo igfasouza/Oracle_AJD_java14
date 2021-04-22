@@ -31,9 +31,9 @@ public class Autonomous{
 
 			PoolDataSource pds = PoolDataSourceFactory.getPoolDataSource();
 			pds.setConnectionFactoryClassName("oracle.jdbc.replay.OracleConnectionPoolDataSourceImpl");
-			pds.setURL("jdbc:oracle:thin:@igor_high?TNS_ADMIN=/Users/iaragaod/Downloads/Wallet_igor");
+			pds.setURL("jdbc:oracle:thin:@dbname_high?TNS_ADMIN=/path/for/your/Wallet_xxx");
 			pds.setUser("admin");
-			pds.setPassword("Oracle01Souza");
+			pds.setPassword("ZZZzzz");
 			pds.setConnectionPoolName("JDBC_UCP_POOL");
 
 			conn = pds.getConnection();
