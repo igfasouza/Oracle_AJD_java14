@@ -1,4 +1,7 @@
+package autonomous.igor;
 
+
+import static io.restassured.RestAssured.given;
 
 import java.sql.Connection;
 import oracle.soda.rdbms.OracleRDBMSClient;
@@ -11,6 +14,13 @@ import oracle.soda.OracleDocument;
 import oracle.soda.OracleException;
 import java.util.List;
 
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbConfig;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+
 public class Autonomous{
 
 	public static void main(String[] arg){
@@ -21,9 +31,9 @@ public class Autonomous{
 
 			PoolDataSource pds = PoolDataSourceFactory.getPoolDataSource();
 			pds.setConnectionFactoryClassName("oracle.jdbc.replay.OracleConnectionPoolDataSourceImpl");
-			pds.setURL("jdbc:oracle:thin:@bdname_high?TNS_ADMIN=/path/for/Wallet_dbname");
+			pds.setURL("jdbc:oracle:thin:@igor_high?TNS_ADMIN=/Users/iaragaod/Downloads/Wallet_igor");
 			pds.setUser("admin");
-			pds.setPassword("ZZZZzzzz");
+			pds.setPassword("Oracle01Souza");
 			pds.setConnectionPoolName("JDBC_UCP_POOL");
 
 			conn = pds.getConnection();
@@ -34,6 +44,7 @@ public class Autonomous{
 
 			OracleCollection col = db.admin().createCollection("MyJSONCollection2");
 
+			//Gson
 			var la = new Location(
 					"90210",
 					"United States",
@@ -44,8 +55,32 @@ public class Autonomous{
 							"California",
 							"CA",
 							"34.0901")));
+			
+			//API
+			var laAPI = given()
+					.get("http://api.zippopotam.us/us/90210")
+					.as(Location.class);
+
+			final ObjectMapper mapper = new ObjectMapper()
+					.enable(SerializationFeature.INDENT_OUTPUT);
+
+			//Jackson
+			var laJackson = mapper.writeValueAsString(la);
+
+
+			//jsonB
+			var jsonb = JsonbBuilder.create(
+					new JsonbConfig()
+					.withFormatting(true)
+					);
+			
+			var laJsonB = jsonb.toJson(la);
 
 			OracleDocument doc = db.createDocumentFromString(la.toString());
+			//these lines produce the same value
+//			OracleDocument doc = db.createDocumentFromString(laAPI.toString());
+//			OracleDocument doc = db.createDocumentFromString(laJackson.toString());
+//			OracleDocument doc = db.createDocumentFromString(jsonb.toString());
 
 			col.insert(doc);
 			OracleCursor c = null;
